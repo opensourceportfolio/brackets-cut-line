@@ -1,0 +1,14 @@
+﻿{
+    "name": "opensourceportfolio.brackets-cut-line",
+    "title": "Brackets cut line",
+    "description": "Cut or copy whole line when selection is empty",
+    "homepage": "https://github.com/opensourceportfolio",
+    "version": "0.1.0",
+    "author": "Leon Tager leon.tager@outlook.com (http://opensourceportfolio.com)",
+    "license": "MIT",
+    "engines": {
+        "brackets": ">=0.24.0"
+    },
+	"categories": "editing",
+	"keywords": ["cut", "copy", "whole", "line"]
+}
