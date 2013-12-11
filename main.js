@@ -23,11 +23,24 @@ define(function (require, exports, module) {
 				isSelectionEmpty = (from.line == to.line && from.ch == to.ch);
 
 			if (isSelectionEmpty) {
-				var line = editor.getLine(from.line);
+				var line = editor.getLine(from.line),
+                    currentLineNumber = to.line,
+                    lineCount = editor.lineCount(),
+                    nextLine = '';
+                
 				clipboard.copy("\n" + line);
-				if (isCutOperation) editor.removeLine(from.line);
+				if (isCutOperation) { 
+                    editor.removeLine(from.line);
+                    if (currentLineNumber < lineCount){
+                        nextLine = editor.getLine(currentLineNumber);
+                        editor.setCursor({
+                            ch: nextLine.length,
+                            line: currentLineNumber
+                        });
+                    }
+                }
 			} else {
-				return new jQuery.Deferred.reject();
+				return new $.Deferred.reject();
 			}
 		};
 	}
