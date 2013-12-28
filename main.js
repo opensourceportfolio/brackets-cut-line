@@ -15,7 +15,7 @@ define(function (require, exports, module) {
         COPY_LINE = "opensourceportfolio.cut-line.copy",
         PASTE_LINE = "opensourceportfolio.cut-line.paste",
         clipboard,
-		isLineCopied = false;
+        isLineCopied = false;
 
     function modifyLine(isCutOperation) {
         return function () {
@@ -31,6 +31,7 @@ define(function (require, exports, module) {
                     nextLine = '';
 
                 clipboard.copy("\n" + line);
+                isLineCopied = true;
                 if (isCutOperation) {
                     editor.removeLine(from.line);
                     if (currentLineNumber < lineCount) {
@@ -42,7 +43,8 @@ define(function (require, exports, module) {
                     }
                 }
             } else {
-                return new $.Deferred.reject();
+                isLineCopied = false;
+                return $.Deferred().reject();
             }
         };
     }
@@ -53,13 +55,17 @@ define(function (require, exports, module) {
             to = editor.getCursor(false),
             isSelectionEmpty = (from.line == to.line && from.ch == to.ch),
             position;
-        
-        if (isSelectionEmpty) {
+
+        if (isSelectionEmpty && isLineCopied) {
+            isLineCopied = false;
             position = editor.getLine(from.line).length;
-            editor.setCursor({line: from.line, ch: position});
+            editor.setCursor({
+                line: from.line,
+                ch: position
+            });
         }
-		
-        return new $.Deferred.reject();
+
+        return $.Deferred().reject();
     }
 
     function connect() {
