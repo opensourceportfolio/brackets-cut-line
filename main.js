@@ -34,7 +34,7 @@ define(function (require, exports, module) {
                 isLineCopied = true;
                 if (isCutOperation) {
                     editor.removeLine(from.line);
-                    if (currentLineNumber < lineCount) {
+                    if (currentLineNumber < lineCount - 1) {
                         nextLine = editor.getLine(currentLineNumber);
                         editor.setCursor({
                             ch: nextLine.length,
