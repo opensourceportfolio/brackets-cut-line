@@ -1,3 +1,4 @@
+/* globals: require, console, exports */
 (function () {
 	'use strict';
 
@@ -9,6 +10,10 @@
 			console.log('copy complete');
 		});
 	}
+    
+    function paste() {
+        return copyPaste.paste();
+    }
 
 	function init(domainManager) {
 		_domainManager = domainManager;
@@ -28,6 +33,14 @@
 			'Copies data into the clipboard', 
 			[], 
 			[{name: "clipboardContent", type: "string", description: "the contents of the clipboard"}]
+		);
+
+		domainManager.registerCommand(
+			'clipboard',
+			'paste',
+			paste,
+			false,
+			'Paste data from the clipboard'
 		);
 	}
 	

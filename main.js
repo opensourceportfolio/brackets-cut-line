@@ -1,4 +1,5 @@
-/*global define, $, jQuery, brackets, window, console */
+/* global define, $, jQuery, brackets, window, console */
+/* jshint esnext:true */
 
 define(function (require, exports, module) {
     "use strict";
@@ -24,6 +25,8 @@ define(function (require, exports, module) {
                 to = editor.getCursor(false),
                 isSelectionEmpty = (from.line == to.line && from.ch == to.ch);
 
+            isLineCopied = isSelectionEmpty;
+            
             if (isSelectionEmpty) {
                 var line = editor.getLine(from.line),
                     currentLineNumber = to.line,
@@ -31,9 +34,8 @@ define(function (require, exports, module) {
                     nextLine = '';
 
                 clipboard.copy("\n" + line);
-                isLineCopied = true;
                 if (isCutOperation) {
-                    editor.removeLine(from.line);
+                    editor.execCommand("deleteLine");
                     if (currentLineNumber < lineCount) {
                         nextLine = editor.getLine(currentLineNumber);
                         editor.setCursor({
@@ -43,7 +45,6 @@ define(function (require, exports, module) {
                     }
                 }
             } else {
-                isLineCopied = false;
                 return $.Deferred().reject();
             }
         };
@@ -54,15 +55,20 @@ define(function (require, exports, module) {
         var from = editor.getCursor(true),
             to = editor.getCursor(false),
             isSelectionEmpty = (from.line == to.line && from.ch == to.ch),
-            position;
+            position,
+            content;
 
-        if (isSelectionEmpty && isLineCopied) {
-            isLineCopied = false;
-            position = editor.getLine(from.line).length;
-            editor.setCursor({
-                line: from.line,
-                ch: position
-            });
+        if (isSelectionEmpty) {
+            //TODO: Find a way to synchronously paste in Windows
+            //content = clipboard.paste();
+            //if (content && content[0] === '\n') {
+            if(isLineCopied) {
+                position = editor.getLine(from.line).length;
+                editor.setCursor({
+                    line: from.line,
+                    ch: position
+                });
+            }
         }
 
         return $.Deferred().reject();
