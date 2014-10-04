@@ -26,7 +26,7 @@ define(function (require, exports, module) {
                 isSelectionEmpty = (from.line == to.line && from.ch == to.ch);
 
             isLineCopied = isSelectionEmpty;
-            
+
             if (isSelectionEmpty) {
                 var line = editor.getLine(from.line),
                     currentLineNumber = to.line,
@@ -51,20 +51,25 @@ define(function (require, exports, module) {
     }
 
     function pasteLine() {
-        var editor = EditorManager.getFocusedEditor()._codeMirror;
-        var from = editor.getCursor(true),
-            to = editor.getCursor(false),
-            isSelectionEmpty = (from.line == to.line && from.ch == to.ch),
+        var editor = EditorManager.getFocusedEditor(),
+            codeMirror = editor ? editor._codeMirror : null,
+            from,
+            to,
+            isSelectionEmpty,
             position,
             content;
 
-        if (isSelectionEmpty) {
-            //TODO: Find a way to synchronously paste in Windows
-            //content = clipboard.paste();
-            //if (content && content[0] === '\n') {
-            if(isLineCopied) {
-                position = editor.getLine(from.line).length;
-                editor.setCursor({
+        if (codeMirror) {
+            from = codeMirror.getCursor(true);
+            to = codeMirror.getCursor(false);
+            isSelectionEmpty = (from.line == to.line && from.ch == to.ch);
+
+            if (isSelectionEmpty && isLineCopied) {
+                //TODO: Find a way to synchronously paste in Windows
+                //content = clipboard.paste();
+                //if (content && content[0] === '\n') {
+                position = codeMirror.getLine(from.line).length;
+                codeMirror.setCursor({
                     line: from.line,
                     ch: position
                 });
