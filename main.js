@@ -12,40 +12,35 @@ define(function (require, exports, module) {
         EditorManager = brackets.getModule("editor/EditorManager"),
         NodeConnection = brackets.getModule("utils/NodeConnection");
 
-    var CUT_LINE = "opensourceportfolio.cut-line.cut",
-        COPY_LINE = "opensourceportfolio.cut-line.copy",
+    var COPY_LINE = "opensourceportfolio.cut-line.copy",
         PASTE_LINE = "opensourceportfolio.cut-line.paste",
         clipboard,
         isLineCopied = false;
 
-    function modifyLine(isCutOperation) {
+    function modifyLine() {
         return function () {
-            var editor = EditorManager.getFocusedEditor()._codeMirror;
-            var from = editor.getCursor(true),
-                to = editor.getCursor(false),
-                isSelectionEmpty = (from.line == to.line && from.ch == to.ch);
+            var editor = EditorManager.getFocusedEditor(),
+                codeMirror = editor ? editor._codeMirror : null,
+                from,
+                to,
+                isSelectionEmpty;
 
             isLineCopied = isSelectionEmpty;
 
-            if (isSelectionEmpty) {
-                var line = editor.getLine(from.line),
-                    currentLineNumber = to.line,
-                    lineCount = editor.lineCount(),
-                    nextLine = '';
+            if (codeMirror) {
+                from = codeMirror.getCursor(true);
+                to = codeMirror.getCursor(false);
+                isSelectionEmpty = (from.line === to.line && from.ch === to.ch);
+                if (isSelectionEmpty) {
+                    var line = codeMirror.getLine(from.line),
+                        currentLineNumber = to.line,
+                        lineCount = codeMirror.lineCount(),
+                        nextLine = '';
 
-                clipboard.copy("\n" + line);
-                if (isCutOperation) {
-                    editor.execCommand("deleteLine");
-                    if (currentLineNumber < lineCount) {
-                        nextLine = editor.getLine(currentLineNumber);
-                        editor.setCursor({
-                            ch: nextLine.length,
-                            line: currentLineNumber
-                        });
-                    }
+                    clipboard.copy("\n" + line);
+                } else {
+                    return $.Deferred().reject();
                 }
-            } else {
-                return $.Deferred().reject();
             }
         };
     }
@@ -100,11 +95,9 @@ define(function (require, exports, module) {
         connect()
             .then(loadDomain)
             .then(function () {
-                CommandManager.register("Cut line when selection empty", CUT_LINE, modifyLine(true));
-                CommandManager.register("Copy line when selection empty", COPY_LINE, modifyLine(false));
+                CommandManager.register("Copy line when selection empty", COPY_LINE, modifyLine());
                 CommandManager.register("Paste line", PASTE_LINE, pasteLine);
 
-                KeyBindingManager.addBinding(CUT_LINE, "Ctrl-X", brackets.platform);
                 KeyBindingManager.addBinding(COPY_LINE, "Ctrl-C", brackets.platform);
                 KeyBindingManager.addBinding(PASTE_LINE, "Ctrl-V", brackets.platform);
             }).fail(function (e) {
