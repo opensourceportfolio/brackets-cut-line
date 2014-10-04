@@ -13,11 +13,12 @@ define(function (require, exports, module) {
         NodeConnection = brackets.getModule("utils/NodeConnection");
 
     var COPY_LINE = "opensourceportfolio.cut-line.copy",
+        CUT_LINE = "opensourceportfolio.cut-line.cut",
         PASTE_LINE = "opensourceportfolio.cut-line.paste",
         clipboard,
         isLineCopied = false;
 
-    function modifyLine() {
+    function modifyLine(isCutOperation) {
         return function () {
             var editor = EditorManager.getFocusedEditor(),
                 codeMirror = editor ? editor._codeMirror : null,
@@ -38,6 +39,13 @@ define(function (require, exports, module) {
                         nextLine = '';
 
                     clipboard.copy("\n" + line);
+                    if (isCutOperation && currentLineNumber < lineCount) {
+                        nextLine = editor.getLine(currentLineNumber);
+                        editor.setCursor({
+                            ch: nextLine.length,
+                            line: currentLineNumber
+                        });
+                    }
                 } else {
                     return $.Deferred().reject();
                 }
@@ -95,7 +103,8 @@ define(function (require, exports, module) {
         connect()
             .then(loadDomain)
             .then(function () {
-                CommandManager.register("Copy line when selection empty", COPY_LINE, modifyLine());
+                CommandManager.register("cut line when selection empty", CUT_LINE, modifyLine(true));
+                CommandManager.register("Copy line when selection empty", COPY_LINE, modifyLine(false));
                 CommandManager.register("Paste line", PASTE_LINE, pasteLine);
 
                 KeyBindingManager.addBinding(COPY_LINE, "Ctrl-C", brackets.platform);
