@@ -1,4 +1,5 @@
-/* globals: require, console, exports */
+/* global require, console, exports */
+
 (function () {
 	'use strict';
 
@@ -6,13 +7,11 @@
 		_domainManager;
 
 	function copy(userSelection) {
-		copyPaste.copy(userSelection, function(){
-			console.log('copy complete');
-		});
+		copyPaste.copy(userSelection);
 	}
     
-    function paste() {
-        return copyPaste.paste();
+    function paste(callback) {
+        copyPaste.paste(callback);
     }
 
 	function init(domainManager) {
@@ -29,7 +28,7 @@
 			'clipboard',
 			'copy',
 			copy,
-			false,
+			true,
 			'Copies data into the clipboard', 
 			[], 
 			[{name: "clipboardContent", type: "string", description: "the contents of the clipboard"}]
@@ -39,7 +38,7 @@
 			'clipboard',
 			'paste',
 			paste,
-			false,
+			true,
 			'Paste data from the clipboard'
 		);
 	}

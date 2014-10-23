@@ -1,0 +1,11 @@
+{
+  "name": "brackets-cut-line",
+  "version": "0.0.0",
+  "description": "Dependencies for brackets-cut-line",
+  "dependencies": {
+    "copy-paste": "^1.0.0"
+  },
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
+}
