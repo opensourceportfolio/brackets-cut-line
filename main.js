@@ -103,11 +103,13 @@ define(function (require, exports, module) {
 	}
 
 	AppInit.appReady(function () {
+		var superKey = brackets.platform === 'mac' ? 'Cmd' : 'Ctrl'; //need to override shortcut for specific platform
+
 		loadDomain();
 		CommandManager.register("Copy line when selection empty", COPY_LINE, modifyLine);
 		CommandManager.register("Paste line", PASTE_LINE, pasteLine);
 
-		KeyBindingManager.addBinding(COPY_LINE, "Ctrl-C", brackets.platform);
-		KeyBindingManager.addBinding(PASTE_LINE, "Ctrl-V", brackets.platform);
+		KeyBindingManager.addBinding(COPY_LINE, superKey + "-C", brackets.platform);
+		KeyBindingManager.addBinding(PASTE_LINE, superKey + "-V", brackets.platform);
 	});
 });
